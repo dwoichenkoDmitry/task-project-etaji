@@ -31,7 +31,7 @@ const defaultPostsState = {
     bag: []
 }
 
-interface IState {
+export interface IState {
     posts: PostType[]
     bag: PostType[]
 }

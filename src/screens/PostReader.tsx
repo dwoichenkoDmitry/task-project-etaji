@@ -1,7 +1,7 @@
 import {Button} from "react-native-web";
 import styled from "styled-components/native";
 import {Link} from "react-router-dom";
-import {useState} from "react";
+import React, {useState} from "react";
 import IPostObject from "../interfaces/PostsInterface";
 import {useDispatch, useSelector} from "react-redux";
 import moment from "moment";
@@ -63,7 +63,7 @@ export const PostReader = () => {
             <InputLine>
                 <LineText>Заголовок</LineText>
                 <TextInputs
-                    onChange={(e: any) => {
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         setPostedParameters({...postedParameters, header: e.target.value})
                     }}
                 />
@@ -71,7 +71,7 @@ export const PostReader = () => {
             <InputLine>
                 <LineText>Описание</LineText>
                 <TextInputs
-                    onChange={(e: any) => {
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         setPostedParameters({...postedParameters, description: e.target.value})
                     }}
                 />

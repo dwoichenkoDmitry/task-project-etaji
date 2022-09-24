@@ -65,11 +65,11 @@ export const UpdatePost = () => {
             {post ?
                 <FormContainer>
                     <HeadersText>Заголовок</HeadersText>
-                    <TextInputs onChange={(e: any) => {
+                    <TextInputs onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         setUpdatedPost({...updatedPost, header: e.target.value})
                     }} defaultValue={post.header}/>
                     <HeadersText>Описание</HeadersText>
-                    <TextInputs onChange={(e: any) => {
+                    <TextInputs onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         setUpdatedPost({...updatedPost, description: e.target.value})
                     }} defaultValue={post.description}/>
                     <HeadersText>Дата окончания</HeadersText>

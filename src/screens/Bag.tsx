@@ -52,6 +52,15 @@ export const Bag = () => {
         dispatch({type: 'ASYNC_SEND'})
     }
 
+    const predicate = (item: PostType) =>
+        (filterParameters.startDate !== '' ?
+            ConvertDate(item.defaultStartDate) > ConvertDate(filterParameters.startDate) : true) &&
+        (filterParameters.finishDate !== '' ?
+            ConvertDate(item.defaultFinishDate) < ConvertDate(filterParameters.finishDate) : true) &&
+        (filterParameters.header !== '' ?
+            item.header.indexOf(filterParameters.header) !== -1 : true) &&
+        (filterStatus === Statuses.all ? true : filterStatus === Statuses.InProcess ? !item.status : item.status)
+
 
     return (
         <AppContainer>
@@ -99,29 +108,25 @@ export const Bag = () => {
             </View>
 
 
-            <FlatList
+            {state.bag.filter(predicate).length>0?
+                <FlatList
                 data={state.bag
-                    .slice(0, scrollCount)
-                    .filter((item: PostType) =>
-                        (filterParameters.startDate !== '' ?
-                            ConvertDate(item.defaultStartDate) > ConvertDate(filterParameters.startDate) : true) &&
-                        (filterParameters.finishDate !== '' ?
-                            ConvertDate(item.defaultFinishDate) < ConvertDate(filterParameters.finishDate) : true) &&
-                        (filterParameters.header !== '' ?
-                            item.header.indexOf(filterParameters.header) !== -1 : true) &&
-                        (filterStatus === Statuses.all ? true : filterStatus === Statuses.InProcess ? !item.status : item.status)
-                    )}
+                .slice(0, scrollCount)
+                .filter(predicate)}
                 initialNumToRender={10}
                 maxToRenderPerBatch={10}
                 onEndReachedThreshold={0.1}
                 onEndReached={() => {
-                    ChangeScrollCount()
+                ChangeScrollCount()
                 }}
+                ListFooterComponent={<EndListText>Конец списка</EndListText>}
                 removeClippedSubviews={true}
                 keyExtractor={(item: PostType) => item.id}
                 renderItem={(item: any) => <BagPost item={item.item}/>}
-            />
-            <Text>fsngj</Text>
+                />
+                :
+                <EndListText>Нет элементов</EndListText>
+            }
         </AppContainer>
     )
 }
@@ -201,4 +206,10 @@ const StatusFilter = styled.View`
   background: #fff;
   justify-content: center;
   align-items: center;
+`
+
+const EndListText = styled.Text`
+  text-align: center;
+  font-size: 25px;
+  padding: 10px 0;
 `
