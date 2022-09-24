@@ -1,46 +1,62 @@
-# Getting Started with Create React App
+#Выполненные мною пункты ТЗ: 
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+1 - Приложение позволяет добавлять/удалять/редактировать задачи;
+2 - У каждой задачи должны быть следующие параметры: заголовок, флаг выполнена или нет, дата начала, дата конца и описание;
+3 - Даты должны выводиться в формате “5 фев 2022 г.”;
+4 - Задачи отображаются на главной странице в порядке их добавления в виде списка с пагинацией. По достижению конца страницы добавляются новые данные, а по достижению конца списка задач отображается надпись “Конец списка”. На одной странице отображаются 15 задач;
+5 - Задачи на главной странице можно фильтровать по всем параметрам, кроме описания. После изменения параметров фильтрации пагинация сбрасывается, т.е. отображается только первая страница;
+6 - Добавление и редактирование происходит на отдельной странице.
+7 - Удаление задачи происходит на главном экране после подтверждения, вызывается алерт “Вы действительно хотите удалить задачу?”;
+8 - Флаг “Выполнена” у задачи можно изменить только на главной странице;
+9 - Все данные о задачах сохраняются в LocalStorage и загружаются оттуда при открытии приложения;
+10 - Все страницы должны быть сверстаны на flex. Верстка должна быть адаптирована только под мобильные устройства;
+11 - (*) Удаленные задачи должны отображаться на отдельной странице / в отдельном блоке “Корзина”. Список удаленных задач можно очистить;
+12 - (*) сымитировать задержку синхронизации в 500мс; (воспользовался redux-saga, но выполнил лишь задержку загрузки и выгрузки данных)
+13 - (*) Список задач должен быть виртуализированным;
 
-## Available Scripts
+# Частично выполненные:
 
-In the project directory, you can run:
+(*) Верстка должна быть адаптирована под десктопные устройства. 
 
-### `npm start`
+# Не понят принцип заданий:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+ー (*) На всех страницах должна отображаться информация о состоянии
+синхронизации с LocalStorage;
+ー (*) Данные должны синхронизироваться с LocalStorage не чаще чем раз в
+300мс;
+ー (*) В случае ошибки синхронизации (происходит в 50% случаях, необходимо
+сымитировать) необходимо уведомить об этом пользователя. Пользователь
+должен иметь возможность повторить синхронизацию при сбое;
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
 
-### `npm test`
+#Использованные технологии из ТЗ:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+ー React
+ー React Native Web
+ー Redux
+ー (*) Redux-saga (упростит выполнение доп. задач)
+ー (*) TypeScript
+ー (*) moment
+ー (*) React Router (С Navigation возникли проблемы с зависимостями в веб версией фреймворка)
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# Принцип работы работы с данными:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Компоненты посылают запрос в Redux, где изменяется состояние объектов. Объекты в redux ("posts" и "bag") являются массивами объектов. 
+При изменении данных, так же, посылается асинхронный запрос в Redux-saga, для синхронизации данных с localStorage, с имитированной задержкой в 500мс. 
+В localStorage массивы объектов сохраняются целиком, по ключам "posts" и "bag".
+Даты форматируются посредством библиотеки momentJs. 
+Для реализациии фильтрации локализированные на русский даты являются некорректными, поэтому сохраняю даты в стандартном формате, в свойствах "defaultStartDate" и "defaultFinishDate". 
+Задачи к отображению списка полностью решил средствами компонента FlatList.
+Так как у меня нет проектов на Native, а на задание было дано лишь 4 дня, я воспользовался библиотекой styled-components, преобразующей стандартные css стили в воспринимаемые мобильными устройствами. 
+Так же, возникли проблемы с выводом мобильного алерта в веб версии, поэтому я написал собственный алерт, подписывающийся на событие клика вне тела, посредством useState, вызывая скрытие компонента.
+Возникли проблемы с телефонным компонентом выбора даты, отчего я использовал стандартный input date. 
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+# С чем я познакомился, по ходу выполнения
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Ранее, у меня не было опыта разработки React Native, разобрылся в принципах работы с нативным реактом. 
+Мне приглянулся компонент FlatList, за его встроенные методы оптимизации. 
+Подробнее разобрался с Redux, впервые познакомился с асинхронным изменением состояния в Redux. 
+Всё, что касается стандартного React, насколько я могу судить, я знал до начала выполнения.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
