@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@react-native-community/datetimepicker": "^6.3.4",
     "@react-navigation/web": "^1.0.0-alpha.9",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -11,13 +12,24 @@
     "@types/node": "^16.11.59",
     "@types/react": "^18.0.20",
     "@types/react-dom": "^18.0.6",
+    "lodash.throttle": "^4.1.1",
+    "moment": "^2.29.4",
+    "moment-ru": "^2.24.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-moment": "^1.1.2",
+    "react-native-date-input": "^1.0.11",
+    "react-native-date-picker": "^4.2.5",
+    "react-native-datepicker": "^1.7.2",
+    "react-native-datepicker-dialog": "^0.0.9",
     "react-native-web": "^0.18.9",
     "react-navigation-stack-web": "^0.0.1",
+    "react-redux": "^8.0.2",
     "react-router": "^6.4.1",
     "react-router-dom": "^6.4.1",
     "react-scripts": "5.0.1",
+    "redux": "^4.2.0",
+    "redux-saga": "^1.2.1",
     "styled-components": "^5.3.5",
     "typescript": "^4.8.3",
     "web-vitals": "^2.1.4"
@@ -45,5 +57,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.19.1",
+    "@babel/preset-env": "^7.19.1",
+    "babel-loader": "^8.2.5"
   }
 }

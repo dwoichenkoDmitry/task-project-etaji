@@ -1,37 +1,25 @@
-import {Text, FlatList, View} from "react-native-web";
-import {Post} from "../components/Post";
+import {Text, FlatList, Alert, View} from "react-native-web";
 import React, {useEffect, useState} from "react";
 import styled from "styled-components/native";
 import {Link} from "react-router-dom";
-import {useSelector} from "react-redux";
-import {DeleteAlerter} from "../components/UIComponents/DeleteAlerter";
+import {useDispatch, useSelector} from "react-redux";
 import {PostType} from "../interfaces/PostsInterface";
 import {ConvertDate} from "../dates/dateWork";
+import {BagPost} from "../components/BagPost";
 
 
-export enum Statuses {
+enum Statuses {
     all = 'Все',
     InProcess = 'В процессе',
     InCompleted = 'Завершено'
 }
 
 
-export const HomeScreen = () => {
-    const state: any = useSelector<PostType | undefined>(state => state);
-    const [visionAlert, setVisionAlert] = useState(false)
-    const [deletedIndex, setDeletedIndex] = useState(-1)
 
-    const [posts, setPosts] = useState([
-        {
-            id: 0,
-            defaultFinishDate: '43',
-            status: false,
-            header: 'Погладить кошака',
-            startDate: '22 сен 2022',
-            finishDate: '25 сен 2022',
-            description: 'Кошак лежит, мурлычет'
-        },
-    ])
+export const Bag = () => {
+    const state: any = useSelector<PostType | undefined>(state => state);
+    const dispatch = useDispatch()
+
 
     const [scrollCount, setScrollCount] = useState(15)
     const [filterVision, setFilterVision] = useState(false)
@@ -39,16 +27,11 @@ export const HomeScreen = () => {
     const [filterParameters, setFilterParameters] = useState({header: '', startDate: '', finishDate: ''})
 
 
-    useEffect(() => {
-        setPosts([...state.posts])
-
-    }, [state.posts]);
-
     function ChangeScrollCount() {
-        if (scrollCount + 15 <= posts.length) {
+        if (scrollCount + 15 <= state.bag.length) {
             setScrollCount(scrollCount + 10)
         } else {
-            setScrollCount(state.posts.length)
+            setScrollCount(state.bag.length)
         }
     }
 
@@ -64,31 +47,21 @@ export const HomeScreen = () => {
         }
     }
 
-    const predicate = (item: PostType) =>
-        (filterParameters.startDate !== '' ?
-            ConvertDate(item.defaultStartDate) > ConvertDate(filterParameters.startDate) : true) &&
-        (filterParameters.finishDate !== '' ?
-            ConvertDate(item.defaultFinishDate) < ConvertDate(filterParameters.finishDate) : true) &&
-        (filterParameters.header !== '' ?
-            item.header.indexOf(filterParameters.header) !== -1 : true) &&
-        (filterStatus === Statuses.all ? true : filterStatus === Statuses.InProcess ? !item.status : item.status)
-
+    function ClearBag() {
+        dispatch({type: 'CLEAR_BAG'})
+        dispatch({type: 'ASYNC_SEND'})
+    }
 
 
     return (
         <AppContainer>
             <Header>
+                <Link to={'/'}><BackBtn>Назад</BackBtn></Link>
+                <BackBtn onClick={ClearBag}>Очистить</BackBtn>
                 <HeaderBtn onClick={() => {
                     setFilterVision(!filterVision)
                 }}>
                     <FilterBtnText>{filterVision ? '∧' : '∨'}</FilterBtnText>
-                </HeaderBtn>
-                <HeaderBtn>
-                    <Link to={"bag"}>
-                        <FilterBtnText>
-                            <BasketImage source={require('../img/basket.png')}/>
-                        </FilterBtnText>
-                    </Link>
                 </HeaderBtn>
             </Header>
             <View>
@@ -126,39 +99,33 @@ export const HomeScreen = () => {
             </View>
 
 
-            {state.posts.filter(predicate).length>0?
-                <FlatList
-                    data={state.posts
-                        .slice(0, scrollCount)
-                        .filter(predicate)}
-                    initialNumToRender={10}
-                    maxToRenderPerBatch={10}
-                    onEndReachedThreshold={0.5}
-                    onEndReached={() => {
-                        ChangeScrollCount()
-                    }}
-                    removeClippedSubviews={true}
-                    keyExtractor={(item: PostType) => item.id}
-                    ListFooterComponent={<EndListText>Конец списка</EndListText>}
-                    renderItem={(item: any) => <Post showAlert={setVisionAlert} setIndex={setDeletedIndex}
-                                                     item={item.item}/>}
-                />
-                :
-                <EndListText>Нет элементов</EndListText>
-            }
-
-
-
-            <Link to={'addPost'}><AddPostBtn><AddPostText>+</AddPostText></AddPostBtn></Link>
-            {visionAlert ?
-                <DeleteAlerter deletedIndex={deletedIndex} changeVision={setVisionAlert}/>
-                :
-                null
-            }
-
+            <FlatList
+                data={state.bag
+                    .slice(0, scrollCount)
+                    .filter((item: PostType) =>
+                        (filterParameters.startDate !== '' ?
+                            ConvertDate(item.defaultStartDate) > ConvertDate(filterParameters.startDate) : true) &&
+                        (filterParameters.finishDate !== '' ?
+                            ConvertDate(item.defaultFinishDate) < ConvertDate(filterParameters.finishDate) : true) &&
+                        (filterParameters.header !== '' ?
+                            item.header.indexOf(filterParameters.header) !== -1 : true) &&
+                        (filterStatus === Statuses.all ? true : filterStatus === Statuses.InProcess ? !item.status : item.status)
+                    )}
+                initialNumToRender={10}
+                maxToRenderPerBatch={10}
+                onEndReachedThreshold={0.1}
+                onEndReached={() => {
+                    ChangeScrollCount()
+                }}
+                removeClippedSubviews={true}
+                keyExtractor={(item: PostType) => item.id}
+                renderItem={(item: any) => <BagPost item={item.item}/>}
+            />
+            <Text>fsngj</Text>
         </AppContainer>
     )
 }
+
 
 
 const AppContainer = styled.View`
@@ -176,28 +143,10 @@ const Header = styled.View`
 `;
 
 
-const AddPostBtn = styled.View`
-  width: 70px;
-  height: 70px;
-  border-color: #000;
-  border-style: solid;
-  border-width: 1px;
-  border-radius: 35px;
-  align-items: center;
-  justify-content: center;
-  align-self: flex-end;
-  position: fixed;
-  bottom: 30px;
-  background: #FFF;
-  right: 20px;
+const BackBtn = styled.Text`
+  font-size: 20px;
+  color: #fff;
 `
-
-const AddPostText = styled.Text`
-  font-size: 35px;
-  font-weight: bold;
-  text-align: center;
-`
-
 
 const HeaderBtn = styled.View`
   width: 35px;
@@ -230,11 +179,6 @@ const TextInputs = styled.TextInput`
   background: #fff;
 `
 
-const BasketImage = styled.Image`
-  width: 30px;
-  height: 30px;
-`
-
 
 const LineText = styled.Text`
   font-size: 22px;
@@ -257,10 +201,4 @@ const StatusFilter = styled.View`
   background: #fff;
   justify-content: center;
   align-items: center;
-`
-
-const EndListText = styled.Text`
-  text-align: center;
-  font-size: 25px;
-  padding: 10px 0;
 `

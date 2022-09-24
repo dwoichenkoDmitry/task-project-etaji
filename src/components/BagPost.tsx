@@ -3,35 +3,17 @@ import {CheckBox, View} from "react-native-web";
 import styled from "styled-components/native";
 import {Link} from "react-router-dom";
 import {PostType} from "../interfaces/PostsInterface";
-import {useDispatch} from "react-redux";
 
 
-
-interface IPostItem {
-    item: PostType
-    setIndex: Function
-    showAlert: Function
-}
-
-
-export const Post = ({item, setIndex, showAlert}: IPostItem) => {
-    const dispatch = useDispatch()
-
-    function ChangeChecked() {
-        dispatch({type: 'CHANGE_CHECKED_POST', id: item.id})
-        dispatch({type: 'ASYNC_SEND'})
-    }
-
-
+export const BagPost = ({item}: IPostItem) => {
     return (
         <PostItem>
             <View>
                 <CheckBox
                     value={item.status}
-                    onValueChange={ChangeChecked}
                 />
             </View>
-            <Link style={{textDecoration: 'none'}} to={'fullTask/post/' + item.id}>
+            <Link to={'../fullTask/bag/' + item.id}>
                 <View>
                     <View>
                         <UndecoratedText>{item.header}</UndecoratedText>
@@ -42,15 +24,9 @@ export const Post = ({item, setIndex, showAlert}: IPostItem) => {
                     </DateContainer>
                 </View>
             </Link>
-            <Link to={'updatePost/' + item.id}><BasketImage source={require('../img/pen.png')}/></Link>
-            <BasketImage onClick={(e: Event) => {
-                setIndex(item.id)
-                showAlert(true)
-            }} source={require('../img/basket.png')}/>
         </PostItem>
     );
 };
-
 
 
 const PostItem = styled.View`
@@ -72,7 +48,8 @@ const UndecoratedText = styled.Text`
   color: #000;
 `
 
-const BasketImage = styled.Image`
-  width: 30px;
-  height: 30px;
-`
+
+interface IPostItem {
+    item: PostType
+}
+
