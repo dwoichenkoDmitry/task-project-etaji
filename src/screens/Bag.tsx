@@ -1,5 +1,5 @@
 import {Text, FlatList, Alert, View} from "react-native-web";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import styled from "styled-components/native";
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
@@ -15,12 +15,14 @@ enum Statuses {
     InCompleted = 'Завершено'
 }
 
+type FlatListType = typeof FlatList
+
 
 
 export const Bag = () => {
     const state: any = useSelector<PostType | undefined>(state => state);
     const dispatch = useDispatch()
-
+    const flatListRef = useRef<FlatListType>(null)
 
     const [scrollCount, setScrollCount] = useState(15)
     const [filterVision, setFilterVision] = useState(false)
@@ -45,6 +47,10 @@ export const Bag = () => {
         }
         if (filterStatus === Statuses.InCompleted) {
             setFilterStatus(Statuses.all)
+        }
+        if (state.posts.filter(Predicate(filterParameters, filterStatus)).length>0){
+            {flatListRef.current.scrollToIndex({ index: 0 })}
+            setScrollCount(15)
         }
     }
 
@@ -74,6 +80,9 @@ export const Bag = () => {
                             <TextInputs
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     setFilterParameters({...filterParameters, header: e.target.value})
+                                    if (state.posts.filter(Predicate(filterParameters, filterStatus)).length>0){
+                                        {flatListRef.current.scrollToIndex({ index: 0 })}
+                                    }
                                 }}
                             />
                         </InputLine>
@@ -88,9 +97,17 @@ export const Bag = () => {
                             <InputLine>
                                 <input onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     setFilterParameters({...filterParameters, startDate: e.target.value})
+                                    if (state.posts.filter(Predicate(filterParameters, filterStatus)).length>0){
+                                        {flatListRef.current.scrollToIndex({ index: 0 })}
+                                        setScrollCount(15)
+                                    }
                                 }} type="date"/>
                                 <input onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     setFilterParameters({...filterParameters, finishDate: e.target.value})
+                                    if (state.posts.filter(Predicate(filterParameters, filterStatus)).length>0){
+                                        {flatListRef.current.scrollToIndex({ index: 0 })}
+                                        setScrollCount(15)
+                                    }
                                 }} type="date"/>
                             </InputLine>
                         </View>
@@ -106,6 +123,7 @@ export const Bag = () => {
                 data={state.bag
                 .slice(0, scrollCount)
                 .filter(Predicate(filterParameters, filterStatus))}
+                ref={flatListRef}
                 initialNumToRender={10}
                 maxToRenderPerBatch={10}
                 onEndReachedThreshold={0.1}

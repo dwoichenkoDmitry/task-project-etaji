@@ -1,6 +1,6 @@
 import {Text, FlatList, View} from "react-native-web";
 import {Post} from "../components/Post";
-import React, {useEffect, useState} from "react";
+import React, {MutableRefObject, useEffect, useRef, useState} from "react";
 import styled from "styled-components/native";
 import {Link} from "react-router-dom";
 import {useSelector} from "react-redux";
@@ -15,6 +15,13 @@ export enum Statuses {
     InCompleted = 'Завершено'
 }
 
+interface ListProps {
+    data: string;
+    type: number;
+    id: number;
+}
+
+type FlatListType = typeof FlatList
 
 export const HomeScreen = () => {
     const state: any = useSelector<PostType | undefined>(state => state);
@@ -39,6 +46,10 @@ export const HomeScreen = () => {
     const [filterParameters, setFilterParameters] = useState({header: '', startDate: '', finishDate: ''})
 
 
+
+    const flatListRef = useRef<FlatListType>(null)
+
+
     useEffect(() => {
         setPosts([...state.posts])
 
@@ -61,6 +72,10 @@ export const HomeScreen = () => {
         }
         if (filterStatus === Statuses.InCompleted) {
             setFilterStatus(Statuses.all)
+        }
+        if (state.posts.filter(Predicate(filterParameters, filterStatus)).length>0){
+            {flatListRef.current.scrollToIndex({ index: 0 })}
+            setScrollCount(15)
         }
     }
 
@@ -91,6 +106,10 @@ export const HomeScreen = () => {
                             <TextInputs
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     setFilterParameters({...filterParameters, header: e.target.value})
+                                    if (state.posts.filter(Predicate(filterParameters, filterStatus)).length>0){
+                                        {flatListRef.current.scrollToIndex({ index: 0 })}
+                                        setScrollCount(15)
+                                    }
                                 }}
                             />
                         </InputLine>
@@ -105,9 +124,17 @@ export const HomeScreen = () => {
                             <InputLine>
                                 <input onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     setFilterParameters({...filterParameters, startDate: e.target.value})
+                                    if (state.posts.filter(Predicate(filterParameters, filterStatus)).length>0){
+                                        {flatListRef.current.scrollToIndex({ index: 0 })}
+                                        setScrollCount(15)
+                                    }
                                 }} type="date"/>
                                 <input onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     setFilterParameters({...filterParameters, finishDate: e.target.value})
+                                    if (state.posts.filter(Predicate(filterParameters, filterStatus)).length>0){
+                                        flatListRef.current.scrollToIndex({ index: 0 })
+                                        setScrollCount(15)
+                                    }
                                 }} type="date"/>
                             </InputLine>
                         </View>
@@ -120,6 +147,7 @@ export const HomeScreen = () => {
 
             {state.posts.filter(Predicate(filterParameters, filterStatus)).length>0?
                 <FlatList
+                    ref={flatListRef}
                     data={state.posts
                         .slice(0, scrollCount)
                         .filter(Predicate(filterParameters, filterStatus))}
