@@ -7,7 +7,7 @@ import {useSelector} from "react-redux";
 import {DeleteAlerter} from "../components/UIComponents/DeleteAlerter";
 import {PostType} from "../interfaces/PostsInterface";
 import {ConvertDate} from "../dates/dateWork";
-
+import {Predicate} from "../filterPredicate/predicate";
 
 export enum Statuses {
     all = 'Все',
@@ -64,14 +64,6 @@ export const HomeScreen = () => {
         }
     }
 
-    const predicate = (item: PostType) =>
-        (filterParameters.startDate !== '' ?
-            ConvertDate(item.defaultStartDate) > ConvertDate(filterParameters.startDate) : true) &&
-        (filterParameters.finishDate !== '' ?
-            ConvertDate(item.defaultFinishDate) < ConvertDate(filterParameters.finishDate) : true) &&
-        (filterParameters.header !== '' ?
-            item.header.indexOf(filterParameters.header) !== -1 : true) &&
-        (filterStatus === Statuses.all ? true : filterStatus === Statuses.InProcess ? !item.status : item.status)
 
 
 
@@ -126,11 +118,11 @@ export const HomeScreen = () => {
             </View>
 
 
-            {state.posts.filter(predicate).length>0?
+            {state.posts.filter(Predicate(filterParameters, filterStatus)).length>0?
                 <FlatList
                     data={state.posts
                         .slice(0, scrollCount)
-                        .filter(predicate)}
+                        .filter(Predicate(filterParameters, filterStatus))}
                     initialNumToRender={10}
                     maxToRenderPerBatch={10}
                     onEndReachedThreshold={0.5}

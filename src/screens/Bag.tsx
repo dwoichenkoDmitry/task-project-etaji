@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {PostType} from "../interfaces/PostsInterface";
 import {ConvertDate} from "../dates/dateWork";
 import {BagPost} from "../components/BagPost";
+import {Predicate} from "../filterPredicate/predicate";
 
 
 enum Statuses {
@@ -52,14 +53,6 @@ export const Bag = () => {
         dispatch({type: 'ASYNC_SEND'})
     }
 
-    const predicate = (item: PostType) =>
-        (filterParameters.startDate !== '' ?
-            ConvertDate(item.defaultStartDate) > ConvertDate(filterParameters.startDate) : true) &&
-        (filterParameters.finishDate !== '' ?
-            ConvertDate(item.defaultFinishDate) < ConvertDate(filterParameters.finishDate) : true) &&
-        (filterParameters.header !== '' ?
-            item.header.indexOf(filterParameters.header) !== -1 : true) &&
-        (filterStatus === Statuses.all ? true : filterStatus === Statuses.InProcess ? !item.status : item.status)
 
 
     return (
@@ -108,11 +101,11 @@ export const Bag = () => {
             </View>
 
 
-            {state.bag.filter(predicate).length>0?
+            {state.bag.filter(Predicate(filterParameters, filterStatus)).length>0?
                 <FlatList
                 data={state.bag
                 .slice(0, scrollCount)
-                .filter(predicate)}
+                .filter(Predicate(filterParameters, filterStatus))}
                 initialNumToRender={10}
                 maxToRenderPerBatch={10}
                 onEndReachedThreshold={0.1}

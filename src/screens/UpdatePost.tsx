@@ -32,6 +32,7 @@ export const UpdatePost = () => {
         description: post.description,
         startDate: post.startDate,
         finishDate: '',
+        defaultStartDate: post.defaultStartDate,
         defaultFinishDate: post.defaultFinishDate
     })
 
@@ -50,6 +51,7 @@ export const UpdatePost = () => {
                 description: updatedPost.description,
                 startDate: updatedPost.startDate,
                 finishDate: date,
+                defaultStartDate: updatedPost.defaultStartDate,
                 defaultFinishDate: defaultDate ? defaultDate : updatedPost.defaultFinishDate,
                 state: updatedPost.status
             }
